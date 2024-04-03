@@ -6,6 +6,7 @@ from config import db, bcrypt
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
+    serialize_rules = ('-recipes.user', '-_password_hash',)
 
     id = db.Column(db.Integer, primary_key = True)
     username = db.Column(db.String, unique = True, nullable = False)
@@ -15,14 +16,14 @@ class User(db.Model, SerializerMixin):
 
     recipes = db.relationship('Recipe', backref='user')
 
-    @validates('username')
-    def validate_name(self, key, username):
-        if not username:
-            raise ValueError('must have a username')
-        existing_user = User.query.filter(User.username == username).first()
-        if existing_user is not None:
-            raise ValueError('No two users have the same name.')
-        return username
+    # @validates('username')
+    # def validate_name(self, key, username):
+    #     if not username:
+    #         raise ValueError('must have a username')
+    #     existing_user = User.query.filter(User.username == username).first()
+    #     if existing_user is not None:
+    #         raise ValueError('No two users have the same name.')
+    #     return username
     
     @hybrid_property
     def password_hash(self):
